@@ -2,15 +2,45 @@
 
 
 
-@extends('layouts.main')
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-@push('css')
+
+    <title>{{ config('app.name', 'Laravel') }}</title>
+
+
+
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+{{--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>--}}
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
-@endpush
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+{{--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>--}}
+</head>
+<body style="direction: rtl">
+<div id="app">
+    <nav class="navbar navbar-expand-md navbar-light navbar-laravel">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url('/') }}">
+                {{ config('app.name', 'Laravel') }}
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-@section('content')
+            </div>
+        </div>
+    </nav>
+    <main class="py-4">
+
+{{--@section('content')--}}
+    <div id="message"></div>
+
 
         <div class="content">
             <div class="container-fluid">
@@ -26,27 +56,25 @@
 
                         <div class="card-body">
                             <div class="table-responsive">
-                                <form  action="{{route('order.add_order')}}" method="post">
-@csrf
+                                <form  action="{{route('order.store')}}" method="post">
+
+                                    {{ csrf_field() }}
                                     <table  style="width:100%" >
                                         <div class="col-sm-6" >
-
-                                    <td colspan="2">
-                                        <button type="submit" class="btn btn-primary">اعتماد</button>
-                                    </td>
+                                            <td>
+                                                السائق
+                                                <select name="user">
+                                                    @foreach($users as $user)
+                                                        {{--                                            {{$users}}--}}
+                                                        {{--@if($order->user_id==$order->user->id)--}}
+                                                        <option value="{{$user->id}}">{{$user->name}}</option>
+                                                        {{--                                            @endif--}}
+                                                    @endforeach
+                                                </select>
+                                                {{--                                    </div>--}}
+                                            </td>
                                         </div>
-                                        <div class="col-sm-6" >
 
-                                 <td>
-                                الصنف
-                                    <select name="item">
-                                    @foreach($items as $item)
-
-                                            <option value="{{$item->id}}">{{$item->name}}</option>
-                                    @endforeach
-                                    </select>
-                                 </td>
-                                        </div>
 
                                         <div class="col-sm-6" >
 <td>
@@ -57,23 +85,28 @@
                                 <input type="radio" name="qty1" value="لترات"> لترات<br>
                                 <input type="radio" name="qty1" value="شيكل"> مبلغ<br>
                                     </div>  </td><td>
-                                        <input type="text"   name="qty2" required>
+                                        <input type="number"   name="qty2" required>
 {{--                                    </div>--}}
                                             </td>  </td> </div>
-                                    <div class="col-sm-6" >
-                                        <td>
-                                السائق
-                                    <select name="user">
-                                        @foreach($users as $user)
-{{--                                            {{$users}}--}}
-{{--@if($order->user_id==$order->user->id)--}}
-                                            <option value="{{$user->id}}">{{$user->name}}</option>
-{{--                                            @endif--}}
-                                    @endforeach
-                                    </select>
-{{--                                    </div>--}}
-                                </td>
-                                    </div>
+                                        <div class="col-sm-6" >
+
+                                            <td>
+                                                الصنف
+                                                <select name="item">
+                                                    @foreach($items as $item)
+
+                                                        <option value="{{$item->id}}">{{$item->name}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </td>
+                                        </div>
+
+                                        <div class="col-sm-6" >
+
+                                            <td colspan="2">
+                                                <button type="submit" class="btn btn-primary" id="button" >اعتماد</button>
+                                            </td>
+                                        </div>
                                     </table>
 
                                 </form>
@@ -82,7 +115,7 @@
 
 
                             <div class="card-header card-header-primary">
-                                <h4 class="card-title ">الطلبات السابقة</h4>
+                                <h4 class="card-title " style="margin-left:500px ;">الطلبات السابقة</h4>
                                 <hr>
                             </div>
                             <div class="card-body">
@@ -103,7 +136,7 @@
                                         <th>
                                             السائق
                                         </th>
-                                        <th>
+                                        <th colspan="2">
                                             الحالة
                                         </th>
 
@@ -112,13 +145,14 @@
                                         <tbody>
                                         @foreach($orders as $key=>$order)
                                             <tr>
-                                                <td>{{$order->id}}</td>
-                                                <td>{{$order->created_at}}</td>
+                                                <td>{{$key+1}}</td>
+{{--                                                <td>{{$order->id}}</td>--}}
+                                                <td>{{\Carbon\Carbon::parse($order->created_at)->format('d - m - Y')}}</td>
                                                 <td>{{$order->item->name}}</td>
                                                 <td>{{$order->qty}}</td>
                                                 <td>{{$order->user->name}}</td>
                                                 <th>
-                                                    @if($order->status == true)
+                                                    @if($order->status == false)
 
                                                     <span class="label label-info">تسليم</span>
                                                     @else
@@ -129,30 +163,20 @@
                                                 <td>
 
                                                     @if($order->status == false)
-                                                        <form id="status-form-{{ $order->id }}" action="{{ route('orderController.status',$order->id) }}" style="display: none;" method="POST">
-                                                            @csrf
-                                                        </form>
 
-                                                        <button type="button" class="btn btn-info btn-sm" onclick="if(confirm('Are you change this request ?')){
-                                                                event.preventDefault();
-                                                                document.getElementById('status-form-{{ $order->id }}').submit();
-                                                                }else {
-                                                                event.preventDefault();
-                                                                }"><i class="material-icons">تسليم</i></button>
-                                                        @else
-                                                        <form id="status-form-{{ $order->id }}" action="{{ route('orderController.status',$order->id) }}" style="display: none;" method="POST">
-                                                            @csrf
-                                                        </form>
 
-                                                        <button type="button" class="btn btn-info btn-sm" onclick="if(confirm('Are you change this request ?')){
-                                                                event.preventDefault();
-                                                                document.getElementById('status-form-{{ $order->id }}').submit();
-                                                                }else {
-                                                                event.preventDefault();
-                                                                }"><i class="material-icons">ايقاف</i></button>
+                                                            {{ csrf_field() }}
+                                                            <button type="button" class="btn btn-default stauts_update" name="stauts">
+                                                                ايقاف
+                                                            </button>
+                                                            </form>
+                                                            <input type="hidden" class="utd" value="{{$order->id}}"/>
 
-                                                @endif
-                                                </td>
+
+
+                                                        @endif
+                                                    </td>
+
                                             </tr>
 
 
@@ -167,108 +191,56 @@
 
                 </div>
             </div>
+    </main>
         </div>
-{{--        <div class="row">--}}
-{{--            <div class="col-sm-6  col-md-6 col-md-offset-3 col-sm-offset-3">--}}
-{{--                <strong>Tolal:{{$totalPrice}}</strong>--}}
-{{--            </div>--}}
-{{--        </div>--}}
 
 
+</body>
+{{--<script>--}}
 
-@endsection
-
-@push('scripts')
-    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('#table').DataTable();
-        } );
-    </script>
-@endpush
+    $(document).ready(function(){
+        $(".stauts_update").click(function() {
+            var val = $(this).parent().find('.utd').val();
+            $.ajax ({
+                url: "order/" + val,
+                method:"PUT",
+                data:{body:'', _token:'{{csrf_token()}}'},
+                success: function( result ) {
+                    alert("  تم الايقاف ");
+                    window.location.reload()
+
+                }
+            });
+        });
+    });
+
+    $("#button").click(function(){
+        alert("done add");
+        // $(".alert").hide().show('medium');
+    });
+</script>
+{{--    $(document).ready(function(){--}}
+{{--        $(".stauts_update").click(function() {--}}
+{{--        // console.log('ddd');--}}
+{{--        // alert('sss');--}}
+{{--        var val = $(this).parent().find('.utd').val();--}}
+{{--            $.ajax ({--}}
+{{--                url: "/order/" + val,--}}
+{{--                method:"PUT",--}}
+{{--                data:{body:'', _token:'{{csrf_token()}}'},--}}
+{{--                success: function( result ) {--}}
+{{--                    alert("  Are you change this request ?");--}}
+{{--                    window.location.reload()--}}
+
+{{--                }--}}
+{{--            });--}}
+{{--        });--}}
+
+{{--    });--}}
 
 
+{{--</script>--}}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-{{--<!DOCTYPE html>--}}
-{{--<html lang="en">--}}
-{{--<head>--}}
-{{--    <meta charset="utf-8">--}}
-{{--    <!-- <link rel="shortcut icon" href="images/star.png" type="favicon/ico" /> -->--}}
-
-{{--    <title>Order Information</title>--}}
-
-{{--    <link rel="stylesheet" href="{{asset('frontend/css/main.css')}}">--}}
-
-
-
-{{--</head>--}}
-
-{{--<body>--}}
-{{--<h2>HTML Table</h2>--}}
-
-{{--<table>--}}
-{{--    <tr>--}}
-{{--        <th>Company</th>--}}
-{{--        <th>Contact</th>--}}
-{{--        <th>Country</th>--}}
-{{--    </tr>--}}
-{{--    <tr>--}}
-{{--        <td>Alfreds Futterkiste</td>--}}
-{{--        <td>Maria Anders</td>--}}
-{{--        <td>Germany</td>--}}
-{{--    </tr>--}}
-{{--    <tr>--}}
-{{--        <td>Centro comercial Moctezuma</td>--}}
-{{--        <td>Francisco Chang</td>--}}
-{{--        <td>Mexico</td>--}}
-{{--    </tr>--}}
-{{--    <tr>--}}
-{{--        <td>Ernst Handel</td>--}}
-{{--        <td>Roland Mendel</td>--}}
-{{--        <td>Austria</td>--}}
-{{--    </tr>--}}
-{{--    <tr>--}}
-{{--        <td>Island Trading</td>--}}
-{{--        <td>Helen Bennett</td>--}}
-{{--        <td>UK</td>--}}
-{{--    </tr>--}}
-{{--    <tr>--}}
-{{--        <td>Laughing Bacchus Winecellars</td>--}}
-{{--        <td>Yoshi Tannamuri</td>--}}
-{{--        <td>Canada</td>--}}
-{{--    </tr>--}}
-{{--    <tr>--}}
-{{--        <td>Magazzini Alimentari Riuniti</td>--}}
-{{--        <td>Giovanni Rovelli</td>--}}
-{{--        <td>Italy</td>--}}
-{{--    </tr>--}}
-{{--</table>--}}
-
-{{--</body>--}}
-{{--</html>--}}
-
-
-
-
-
-
-
-
-
-
-
+</html>

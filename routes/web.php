@@ -15,17 +15,16 @@
 //    return view('welcome');
 //});
 //Route::get('/','orderController@index')->name('order');
-Route::get('order_info','orderController@index');
-Route::get('/','orderController@index');
-Route::get('/add_order', [
-    'uses'=>'orderController@getOrder',
-    'as'=>'order.add_order'
-]);
+//Route::get('order_info','orderController@index');
+//Route::get('/','orderController@index');
 
-Route::post('/add_order', [
-    'uses'=>'orderController@postOrder',
-    'as'=>'order.add_order'
-]);
+Route::resource('order','infoController');
 
-Route::get('order/{id}','orderController@getstatus')->name('orderController.status');
-Route::post('order/{id}','orderController@poststatus')->name('orderController.status');
+//
+//Route::post('/add_order', [
+//    'uses'=>'orderController@postOrder',
+//    'as'=>'order.add_order'
+//]);
+//
+//Route::get('order/{id}','orderController@getOrder')->name('orderController.status');
+//Route::post('order/{id}','orderController@poststatus')->name('orderController.status');
