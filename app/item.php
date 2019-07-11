@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class item extends Model
 {
+    protected $fillable = [
+        'name',
+    ];
     public  function detail(){
         return $this->hasMany('App\Detail');
     }
