@@ -73,26 +73,11 @@ myApp.controller('submitFormController',function($scope,$http){
         }).then(function successCallback(response) {
             console.log(response);
             alert('Submit Success');
-            // $scope.displayData();
-            // $window.location.href = 'http://localhost/order/public/order';
             $scope.loadTasks();
         }, function errorCallback(response) {
             console.log(response);
             alert('Submit Error');
         });
     }
-    // ,
-    // $scope.displayData=function () {
-    //     $http({
-    //         method: 'get',
-    //         url: 'http://localhost/order/public/order'
-    //     }).then(function (order) {
-    //
-    //         $scope.order = order['data'];
-    //     }, function (error) {
-    //         console.log(error);
-    //     });
-    //
-    // }
 
 });

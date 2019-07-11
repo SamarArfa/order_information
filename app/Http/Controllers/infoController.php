@@ -17,16 +17,10 @@ class infoController extends Controller
      */
     public function index()
     {
-//        $tasks = request()->user()->tasks;
-//dd(1);
-        $orders=Order::with(['item','user'])->get();
+        $orders=Order::with(['item','user'])->orderBy('id','desc')->get();
         $items=Item::all();
-//dd($orders->order->id); $user=User::all();
-//dd($orders->order->id);
         $users=User::all();
         return response()->json(['items'=>$items,'orders'=>$orders->sortBy('id', SORT_REGULAR, true),'users'=>$users],200);
-
-//        return view('order',['items'=>$item,'orders'=>$order->sortBy('id', SORT_REGULAR, true),'users'=>$user]);
 
     }
 
@@ -61,30 +55,15 @@ class infoController extends Controller
 
         'item_id' =>request('item_id'),
         'qty' =>request('qty1').request('qty2') ]);
-//        $data = $request->json()->all();
-//        $order1 = new Order();
-//
-//        $order1->user_id = $data['user_id'];
-//        $order1->status = false;
-//
-//        $order1->item_id =$data['item_id'];
-//        $order1->qty = $data['qty1'] . $data['qty2'];
+
         return Response::json([
             'order'    => $order,
             'message' => 'Success'
         ], 200);
 
-        
-//
-//        $order1->user_id = $request->user;
-//        $order1->status = false;
-//
-//        $order1->item_id = $request->item;
-//        $order1->qty = $request->qty1 . $request->qty2;
         $order1->save();
         return response('successfulyy',200);
 
-//        return redirect()->back();
 
     }
         /**
@@ -121,22 +100,9 @@ class infoController extends Controller
         $data = $request->json()->all();
 
         $order = Order::find($data['id']);
-//        $order->user_id = $data['user_id'];
-//        $order->item_id = $data['item_id'];
-//        $order->qty = $data['qty1'].$data['qty2'];
         $order->status = true;
         $order->save();
-//        $order = Order::find($id);
-//        if( $order->status == true){
-//            $order->status = false;
-//
-//        }else{
-//            $order->status = true;
-
-//        }
-//        $order->save();
 return response('successfulyy',200);
-//        return redirect()->back();
     }
 
     /**
